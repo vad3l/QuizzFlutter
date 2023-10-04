@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'package:untitled1/Question.dart';
 
 class MyEditionPage extends StatefulWidget {
   const MyEditionPage({super.key, required this.title});
@@ -19,82 +19,7 @@ class _MyEditionPageState extends State<MyEditionPage> {
 
 
 
-  void insertQuestion(String question) {
-    setState(() {});
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text('AlertDialog with Radio Buttons and TextField'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Radio(
-                        value: true,
-                        groupValue: isTrueSelected,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isTrueSelected = value!;
-                          });
-                        },
-                      ),
-                      Text('True'),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Radio(
-                        value: false,
-                        groupValue: isTrueSelected,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isTrueSelected = value!;
-                          });
-                        },
-                      ),
-                      Text('False'),
-                    ],
-                  ),
-                  TextField(
-                    controller: textFieldController,
-                    decoration: InputDecoration(labelText: 'Enter text'),
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    // Do something with the selected value and text
-                    bool selectedValue = isTrueSelected;
-                    String enteredText = textFieldController.text;
-
-                    // Close the dialog
-                    Navigator.of(context).pop();
-
-                    // Perform any further actions you need with the values
-                    // (e.g., use them in your application logic)
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
 
 
 
@@ -111,6 +36,7 @@ class _MyEditionPageState extends State<MyEditionPage> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+
                   Row(
                     children: <Widget>[
                       Radio(
@@ -295,8 +221,8 @@ class _MyEditionPageState extends State<MyEditionPage> {
                   child: ListTile(
                     title: Text(tableDesQuestions[index].questionText),
                     onTap: () {
-                      _showAlertDialogModifieQuestion(context,tableDesQuestions[index]);
-
+                      _showAlertDialogModifieQuestion(
+                          context, tableDesQuestions[index]);
                     },
                   ),
                 ),
@@ -306,14 +232,28 @@ class _MyEditionPageState extends State<MyEditionPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAlertDialogAddQuestion(context); // Appel de la fonction pour afficher la boîte de dialogue
-        },
-        tooltip: 'Ajouter une question',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              _showAlertDialogAddQuestion(context);
+            },
+            tooltip: 'Ajouter une question',
+            child: const Icon(Icons.add),
+          ),
+          SizedBox(height: 16), // Add some spacing between the buttons
+          FloatingActionButton(
+            onPressed: () {
+              // Add functionality for the new button here
+              // Example: _handleNewButtonPress();
+            },
+            tooltip: 'Enregistrer',
+            child: const Icon(Icons.star),
+          ),
+        ],
       ),
-
     );
   }
+
 }

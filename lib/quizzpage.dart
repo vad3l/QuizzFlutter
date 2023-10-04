@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:untitled1/Question.dart';
+import 'package:untitled1/homepage.dart';
 
 class MyQuizzPage extends StatefulWidget {
   const MyQuizzPage({super.key, required this.title});
@@ -12,66 +14,93 @@ class MyQuizzPage extends StatefulWidget {
 class _MyQuizzPageState extends State<MyQuizzPage> {
   int _counterPoint = 0;
   int _index = 0;
+  late String _current_question;
 
-  List<List<dynamic>> _questions = [
-    ["Le diable de Tasmanie vit dans la jungle du Brésil ?", false],
-    ["La sauterelle saute l'équivalent de 200 fois sa taille ?", true],
-    ["Les pandas hibernent ?", false],
-    ["On trouve des dromadaires en liberté en Australie ?", true],
-    ["Le papillon monarque vole plus de 4000 km ?", true],
-    ["Les gorilles mâles dorment dans les arbres ?", false]
-  ];
-
-  String _current_question = "Le diable de Tasmanie vit dans la jungle du Brésil ?";
-
-
+  @override
+  void initState() {
+    super.initState();
+    _current_question = tableDesQuestions[0].questionText; // Start with the first question
+  }
 
   void _reset() {
     setState(() {
       _index = 0;
       _counterPoint = 0;
-      _current_question = _questions[0][0];
+      _current_question = tableDesQuestions[0].questionText;
     });
   }
 
-  void _next(){
-    if(_index <4) {
+  void _next() {
+    if (_index < tableDesQuestions.length - 1) {
       _index++;
-      _current_question = _questions[_index][0];
-    }else{
-      _current_question = "Bravo, Tu as eu ${_counterPoint}/5 !";
+      _current_question = tableDesQuestions[_index].questionText;
+    } else {
+      // the end of the quiz
+      showEndDialog();
     }
   }
 
-  void _true(){
+  void _true() {
     setState(() {
-      if (_questions[_index][1]){
+      if (tableDesQuestions[_index].answer) {
         _counterPoint++;
       }
       _next();
     });
   }
 
-  void _false(){
+  void _false() {
     setState(() {
-
-      if (!_questions[_index][1]){
+      if (!tableDesQuestions[_index].answer) {
         _counterPoint++;
       }
       _next();
     });
   }
 
+  void showEndDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Set this to false to make it non-dismissible
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Quizz Fini"),
+          content: Text("Votre score est $_counterPoint sur ${tableDesQuestions.length}"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _reset(); // Reset the quiz
+              },
+              child: Text("Recommencer"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => MyHomePage (title : "Menu")));
+
+                // Perform any other action you want here.
+              },
+              child: Text("Fermer"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     ButtonStyle buttonStyle = TextButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.all(10.0),
-        backgroundColor: Colors.greenAccent,
-        primary: Colors.black, // Text color
-        textStyle: TextStyle(fontSize: 20),
-        minimumSize: Size(80, 60) // Set the width and height to create a square button
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      padding: const EdgeInsets.all(10.0),
+      backgroundColor: Colors.greenAccent,
+      primary: Colors.black, // Text color
+      textStyle: TextStyle(fontSize: 20),
+      minimumSize: Size(80, 60), // Set the width and height to create a square button
     );
     return Scaffold(
       appBar: AppBar(
@@ -79,55 +108,46 @@ class _MyQuizzPageState extends State<MyQuizzPage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child : Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              '$_counterPoint/5',
-              style:const TextStyle(
+              '$_counterPoint/${tableDesQuestions.length}',
+              style: const TextStyle(
                 color: Colors.greenAccent,
                 fontSize: 64,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height:100),
+            const SizedBox(height: 100),
             Text(
               '$_current_question',
               textAlign: TextAlign.center,
-              style:const TextStyle(
-
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 20,
               ),
             ),
-            const SizedBox(height:20),
+            const SizedBox(height: 20),
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:[
-
-                  TextButton(
-                    onPressed: _true,
-                    style: buttonStyle,
-                    child: Text('VRAI'),
-                  ),
-                  const SizedBox(width:10),
-                  TextButton(
-                    onPressed: _false,
-                    style: buttonStyle,
-                    child: Text('FAUX'),
-                  ),
-                ]
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: _true,
+                  style: buttonStyle,
+                  child: Text('VRAI'),
+                ),
+                const SizedBox(width: 10),
+                TextButton(
+                  onPressed: _false,
+                  style: buttonStyle,
+                  child: Text('FAUX'),
+                ),
+              ],
             )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _reset,
-        tooltip: 'Next',
-        child: const Icon(Icons.circle),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      )
     );
   }
 }
-
-

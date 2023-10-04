@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import './quizzpage.dart';
-import './editionpage.dart';
+import 'package:untitled1/quizzpage.dart';
+import 'package:untitled1/editionpage.dart';
+import 'package:untitled1/Question.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -12,6 +16,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  void fetchQuestionsFromUrl() async {
+    final url = Uri.parse('https://dept-info.univ-fcomte.fr/SAMP/Ressources/quizz_monde_animal.json');
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body)["quizz"];
+        // Parse the JSON data and convert it into a list of Question objects
+        tableDesQuestions = jsonData.map((data) => Question.fromJson(data)).toList();
+
+        // Afficher une snackbar verte en cas de succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Chargement réussi'),
+          ),
+        );
+      } else {
+        // Afficher une snackbar rouge en cas d'erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Échec du chargement'),
+          ),
+        );
+      }
+    } catch (e) {
+      // Afficher une snackbar rouge en cas d'exception
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Une erreur s\'est produite : $e'),
+        ),
+      );
+    }
+  }
 
 
 
@@ -61,7 +102,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('Jouer'),
                   ),
                 ]
-            )
+            ),
+            TextButton(
+              onPressed: (){
+                fetchQuestionsFromUrl();
+              },
+              style: buttonStyle,
+              child: Text('Récuper JSON quizz'),
+            ),
           ],
         ),
       ),
